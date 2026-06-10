@@ -330,7 +330,7 @@ async function loadReservations() {
     reservations = data.map(item => ({
       id: item.id,
       name: item.name,
-      printer: item.booth,
+      printer: item.printer,
       start: parseInt(item.start_time),
       end: parseInt(item.end_time),
       note: item.note || ''
@@ -349,7 +349,7 @@ async function saveToSP(r) {
     headers: SB_HEADERS,
     body: JSON.stringify({
       name: r.name,
-      booth: r.printer,
+      printer: r.printer,
       start_time: r.start,
       end_time: r.end,
       note: r.note || ''
