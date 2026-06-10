@@ -811,16 +811,10 @@ function renderPrinters() {
     const card = document.createElement('div');
     card.className = 'psr-card' + (selectedPrinter === p.id ? ' selected' : '');
     card.style.cssText = `border-left: 4px solid ${BORDER_COLORS[colorIdx]};`;
-    const dotColor = status==='busy'?'#e24b4a':status==='reserved'?'#ef9f27':'#63c15d';
-    const statusLabel = status==='busy'?'In use':status==='reserved'?'Booked':'Available';
     card.innerHTML = `
       <i class="ti ti-check psr-check"></i>
       <div class="psr-name">${p.name}</div>
-      <div class="psr-model">${p.model}</div>
-      <div class="psr-status">
-        <span class="psr-dot" style="background:${dotColor};"></span>
-        <span class="psr-status-label">${statusLabel}</span>
-      </div>`;
+      <div class="psr-model">${p.model}</div>`;
     card.addEventListener('click', () => {
       selectedPrinter = p.id; renderPrinters(); validate();
     });
@@ -980,8 +974,16 @@ document.getElementById('btn-submit').addEventListener('click', async () => {
   document.getElementById('input-note').value = '';
   activeDur = null; activeCustomDur = false; renderDurBtns();
   document.getElementById('input-custom-dur').value = '';
+  selectedPrinter = null;
   setDefaultTimes();
   validate(); renderAll();
+  // Reset scene image back to base scene
+  const sceneImg = document.getElementById('scene-img');
+  if (sceneImg) sceneImg.src = sceneImg.dataset.scene;
+  const sceneLabel = document.getElementById('scene-label');
+  if (sceneLabel) { sceneLabel.style.display = ''; sceneLabel.textContent = 'Hover to preview · click to select'; }
+  document.querySelectorAll('.scene-printer-name').forEach(el => el.remove());
+  _hotspotsInited = false;
   try {
     const spId = await saveToSP(newRes);
     newRes.id = spId;
