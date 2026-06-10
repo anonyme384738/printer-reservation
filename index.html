@@ -172,12 +172,7 @@
     <p>Reserve a 3D printer — notifications post automatically to Teams.</p>
   </div>
 
-  <div class="webhook-bar">
-    <i class="ti ti-brand-teams" style="font-size:18px;color:var(--text-secondary);flex-shrink:0;"></i>
-    <input type="text" id="webhook-input" placeholder="Paste your Teams webhook URL here…" autocomplete="off" spellcheck="false">
-    <span class="webhook-status ws-none" id="webhook-status">Not configured</span>
-    <button class="btn-test" id="btn-test" style="display:none;">Send test</button>
-  </div>
+
 
   <div id="loading-msg" style="display:none;font-size:13px;color:var(--text-secondary);padding:8px 0;"><i class="ti ti-loader" style="animation:spin 1s linear infinite;display:inline-block;"></i> Loading reservations from SharePoint…</div>
   <div id="sp-error" style="display:none;font-size:13px;color:var(--text-danger);padding:8px 12px;background:var(--bg-danger);border-radius:var(--radius);margin-bottom:1rem;"></div>
@@ -272,6 +267,13 @@
     </div>
   </div>
 
+
+  <div class="webhook-bar" style="margin-top:2rem;opacity:0.6;">
+    <i class="ti ti-brand-teams" style="font-size:18px;color:var(--text-secondary);flex-shrink:0;"></i>
+    <input type="text" id="webhook-input" placeholder="Teams webhook URL…" autocomplete="off" spellcheck="false">
+    <span class="webhook-status ws-none" id="webhook-status">Not configured</span>
+    <button class="btn-test" id="btn-test" style="display:none;">Send test</button>
+  </div>
 </div>
 <div class="toast" id="toast"></div>
 
