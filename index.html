@@ -259,12 +259,7 @@
 
     <div class="conflict-msg" id="conflict-msg"><i class="ti ti-alert-triangle"></i> Conflict with an existing reservation on this printer.</div>
     <button class="btn-submit" id="btn-submit" disabled>Reserve printer</button>
-    <div class="cal-confirm" id="cal-confirm">
-      <span class="cal-confirm-text" id="cal-confirm-text">Booth reserved!</span>
-      <a class="btn-cal" id="btn-add-cal" href="#" target="_blank">
-        <i class="ti ti-calendar-plus"></i> Add to Outlook
-      </a>
-    </div>
+
   </div>
 
 
@@ -868,7 +863,6 @@ document.getElementById('btn-submit').addEventListener('click', async () => {
   document.getElementById('input-custom-dur').value = '';
   setDefaultTimes();
   validate(); renderAll();
-  showCalConfirm(calName, calBooth, calStart, calEnd, calNote);
   try {
     const spId = await saveToSP(newRes);
     newRes.id = spId;
