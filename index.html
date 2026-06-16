@@ -334,8 +334,22 @@ let activeDur = null;
 let activeCustomDur = false;
 let calWeekOffset = 0;
 
-function getWebhook() { try { return localStorage.getItem('printer_webhook') || ''; } catch(e) { return ''; } }
-function setWebhook(url) { try { localStorage.setItem('printer_webhook', url); } catch(e) {} }
+let _webhookUrl = '';
+function getWebhook() { return _webhookUrl; }
+
+async function loadWebhookFromSupabase() {
+  try {
+    const res = await fetch(`${SB_URL}/rest/v1/config?key=eq.teams_webhook&select=value`, {
+      headers: SB_HEADERS
+    });
+    const data = await res.json();
+    if (data && data[0]) {
+      _webhookUrl = data[0].value;
+      webhookInput.value = _webhookUrl;
+      updateWebhookUI();
+    }
+  } catch(e) { console.error('Webhook load error:', e); }
+}
 
 // ── Supabase ────────────────────────────────────────────────────────────────
 const SB_URL = 'https://ciuzchatezdkwtnidlkq.supabase.co';
@@ -1070,6 +1084,7 @@ function showCalConfirm(name, boothName, startTs, endTs, note) {
 renderAll();
 validate();
 loadReservations();
+loadWebhookFromSupabase();
 setInterval(loadReservations, 30000);
 </script>
 </body>
