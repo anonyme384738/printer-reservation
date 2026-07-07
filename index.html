@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -117,7 +118,6 @@
     .gantt-day-tab.active { background: var(--bg-info); color: var(--text-info); border-color: var(--border-info); }
     .gantt-body { overflow-x: auto; }
     .gantt-inner { display: flex; flex-direction: column; }
-    /* sticky label column */
     .gantt-scroll-area { overflow-x: auto; scroll-snap-type: x mandatory; }
     .gantt-scroll-inner { display: inline-flex; flex-direction: column; min-width: 100%; }
     .gantt-time-header { display: flex; margin-left: 130px; border-bottom: 0.5px solid var(--border); }
@@ -156,9 +156,6 @@
       .color-3 { background: #4a0a35; border-color: #d946a8; }
       .color-4 { background: #2d1a5c; border-color: #8b5cf6; }
     }
-    .gantt-legend { display: flex; flex-wrap: wrap; gap: 10px; padding: 10px 14px; background: var(--bg); border: 0.5px solid var(--border); border-radius: var(--radius); margin-bottom: 2rem; }
-    .gantt-legend-item { display: flex; align-items: center; gap: 6px; font-size: 11px; color: var(--text-secondary); }
-    .gantt-legend-swatch { width: 12px; height: 12px; border-radius: 3px; flex-shrink: 0; }
 
     .toast { position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%); background: var(--text); color: var(--bg); font-size: 14px; padding: 10px 20px; border-radius: var(--radius); opacity: 0; pointer-events: none; transition: opacity 0.2s; z-index: 999; white-space: nowrap; font-family: inherit; }
     .toast.show { opacity: 1; }
@@ -190,34 +187,32 @@
     <p>Reserve a 3D printer — notifications post automatically to Teams.</p>
   </div>
 
-
-
-  <div id="loading-msg" style="display:none;font-size:13px;color:var(--text-secondary);padding:8px 0;"><i class="ti ti-loader" style="animation:spin 1s linear infinite;display:inline-block;"></i> Loading reservations from SharePoint…</div>
-  <div id="sp-error" style="display:none;font-size:13px;color:var(--text-danger);padding:8px 12px;background:var(--bg-danger);border-radius:var(--radius);margin-bottom:1rem;"></div>
-  <style>@keyframes spin{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}</style>
-
-  <div id="loading-msg" style="display:none;font-size:13px;color:var(--text-secondary);padding:8px 0 4px;"><i class="ti ti-loader" style="animation:spin 1s linear infinite;display:inline-block;margin-right:4px;"></i> Syncing with SharePoint…</div>
+  <div id="loading-msg" style="display:none;font-size:13px;color:var(--text-secondary);padding:8px 0 4px;"><i class="ti ti-loader" style="animation:spin 1s linear infinite;display:inline-block;margin-right:4px;"></i> Syncing…</div>
   <div id="sp-error" style="display:none;font-size:13px;color:var(--text-danger);padding:8px 12px;background:var(--bg-danger);border-radius:var(--radius);margin-bottom:1rem;"></div>
   <style>@keyframes spin{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}</style>
 
   <div id="printer-scene-selector">
     <div class="scene-wrap" id="scene-wrap">
       <img id="scene-img" class="scene-img"
-           src="images/scene.png"
-           data-scene="images/scene.png"
+           src="images/Base_photo.png"
+           data-scene="images/Base_photo.png"
            alt="3D Printers">
-      <div class="scene-hotspot" data-printer="x1c-gauche"
-           data-hover="images/gauchehover.png"
-           data-select="images/gaucheselect.png"
-           style="left:0%;top:17%;width:30%;height:65%;"></div>
-      <div class="scene-hotspot" data-printer="x1c-droite"
-           data-hover="images/droitehover.png"
-           data-select="images/droiteselect.png"
-           style="left:28%;top:22%;width:28%;height:58%;"></div>
+      <div class="scene-hotspot" data-printer="x1c-left"
+           data-hover="images/User_sees_while_hovering_X1C_Left.png"
+           data-select="images/Selected_X1C_Left.png"
+           style="left:0%;top:17%;width:25%;height:65%;"></div>
+      <div class="scene-hotspot" data-printer="x1c-middle"
+           data-hover="images/User_sees_while_hovering_X1C_Middle.png"
+           data-select="images/Selected_X1C_Middle.png"
+           style="left:24%;top:20%;width:22%;height:60%;"></div>
+      <div class="scene-hotspot" data-printer="x2d"
+           data-hover="images/User_sees_while_hovering_X2D.png"
+           data-select="images/Selected_X2D.png"
+           style="left:45%;top:20%;width:20%;height:60%;"></div>
       <div class="scene-hotspot" data-printer="h2d"
-           data-hover="images/h2dhover.png"
-           data-select="images/h2dselect.png"
-           style="left:63%;top:12%;width:28%;height:73%;"></div>
+           data-hover="images/User_sees_while_hovering_H2D.png"
+           data-select="images/Selected_H2D.png"
+           style="left:68%;top:10%;width:30%;height:78%;"></div>
       <div class="scene-selected-label" id="scene-label">Hover to preview · click to select</div>
     </div>
     <div class="printer-status-row" id="printers-grid"></div>
@@ -298,9 +293,7 @@
 
     <div class="conflict-msg" id="conflict-msg"><i class="ti ti-alert-triangle"></i> Conflict with an existing reservation on this printer.</div>
     <button class="btn-submit" id="btn-submit" disabled>Reserve printer</button>
-
   </div>
-
 
   <div class="webhook-bar" style="margin-top:2rem;opacity:0.6;">
     <i class="ti ti-brand-teams" style="font-size:18px;color:var(--text-secondary);flex-shrink:0;"></i>
@@ -312,44 +305,27 @@
 <div class="toast" id="toast"></div>
 
 <script>
-const IMG_X1C = '';
-const IMG_H2D = '';
 const PRINTERS = [
-  { id: 'x1c-gauche', name: 'X1C Gauche', model: 'Bambu X1C', img: IMG_X1C },
-  { id: 'x1c-droite', name: 'X1C Droite', model: 'Bambu X1C', img: IMG_X1C },
-  { id: 'h2d',        name: 'H2D',        model: 'Bambu H2D', img: IMG_H2D },
+  { id: 'x1c-left',   name: 'X1C Left',   model: 'Bambu X1C' },
+  { id: 'x1c-middle', name: 'X1C Middle',  model: 'Bambu X1C' },
+  { id: 'x2d',        name: 'X2D',         model: 'Bambu X2D' },
+  { id: 'h2d',        name: 'H2D',         model: 'Bambu H2D' },
 ];
 
-const TEAM_MEMBERS = ['Alex','Edouard','Mathieu','Seb','Stephanie','Tommy'];
-
-const COLORS = ['color-0','color-1','color-2','color-3','color-4'];
-const BORDER_COLORS = ['#3b9ede','#f59e0b','#34c759','#d946a8','#8b5cf6'];
+const COLORS = ['color-0','color-1','color-2','color-3'];
+const BORDER_COLORS = ['#3b9ede','#f59e0b','#34c759','#d946a8'];
 const PRINTER_COLOR = {};
 PRINTERS.forEach((p,i) => PRINTER_COLOR[p.id] = COLORS[i]);
 
 let reservations = [];
 let selectedPrinter = null;
-let selectedDayOffset = 0; // 0=today, 1=tomorrow, etc.
+let selectedDayOffset = 0;
 let activeDur = null;
 let activeCustomDur = false;
 let calWeekOffset = 0;
 
 let _webhookUrl = '';
 function getWebhook() { return _webhookUrl; }
-
-async function loadWebhookFromSupabase() {
-  try {
-    const res = await fetch(`${SB_URL}/rest/v1/config?key=eq.teams_webhook&select=value`, {
-      headers: SB_HEADERS
-    });
-    const data = await res.json();
-    if (data && data[0]) {
-      _webhookUrl = data[0].value;
-      webhookInput.value = _webhookUrl;
-      updateWebhookUI();
-    }
-  } catch(e) { console.error('Webhook load error:', e); }
-}
 
 // ── Supabase ────────────────────────────────────────────────────────────────
 const SB_URL = 'https://ciuzchatezdkwtnidlkq.supabase.co';
@@ -361,6 +337,18 @@ const SB_HEADERS = {
   'Prefer': 'return=representation'
 };
 
+async function loadWebhookFromSupabase() {
+  try {
+    const res = await fetch(`${SB_URL}/rest/v1/config?key=eq.teams_webhook&select=value`, { headers: SB_HEADERS });
+    const data = await res.json();
+    if (data && data[0]) {
+      _webhookUrl = data[0].value;
+      webhookInput.value = _webhookUrl;
+      updateWebhookUI();
+    }
+  } catch(e) { console.error('Webhook load error:', e); }
+}
+
 function showLoading(on) {
   const el = document.getElementById('loading-msg');
   if (el) el.style.display = on ? 'block' : 'none';
@@ -371,22 +359,15 @@ function showError(msg) {
 }
 
 async function loadReservations() {
-  showLoading(true);
-  showError('');
+  showLoading(true); showError('');
   try {
-    const now = Date.now();
-    const res = await fetch(`${SB_URL}/rest/v1/printerreservations?select=*&end_time=gte.${now}&order=start_time.asc`, {
-      headers: SB_HEADERS
-    });
+    const n = Date.now();
+    const res = await fetch(`${SB_URL}/rest/v1/printerreservations?select=*&end_time=gte.${n}&order=start_time.asc`, { headers: SB_HEADERS });
     if (!res.ok) throw new Error(`HTTP ${res.status}: ` + await res.text());
     const data = await res.json();
     reservations = data.map(item => ({
-      id: item.id,
-      name: item.name,
-      printer: item.printer,
-      start: parseInt(item.start_time),
-      end: parseInt(item.end_time),
-      note: item.note || ''
+      id: item.id, name: item.name, printer: item.printer,
+      start: parseInt(item.start_time), end: parseInt(item.end_time), note: item.note || ''
     }));
     renderAll();
   } catch(e) {
@@ -398,15 +379,8 @@ async function loadReservations() {
 
 async function saveToSP(r) {
   const res = await fetch(`${SB_URL}/rest/v1/printerreservations`, {
-    method: 'POST',
-    headers: SB_HEADERS,
-    body: JSON.stringify({
-      name: r.name,
-      printer: r.printer,
-      start_time: r.start,
-      end_time: r.end,
-      note: r.note || ''
-    })
+    method: 'POST', headers: SB_HEADERS,
+    body: JSON.stringify({ name: r.name, printer: r.printer, start_time: r.start, end_time: r.end, note: r.note || '' })
   });
   if (!res.ok) throw new Error(`HTTP ${res.status}: ` + await res.text());
   const data = await res.json();
@@ -414,14 +388,9 @@ async function saveToSP(r) {
 }
 
 async function deleteFromSP(id) {
-  const res = await fetch(`${SB_URL}/rest/v1/printerreservations?id=eq.${id}`, {
-    method: 'DELETE',
-    headers: SB_HEADERS
-  });
+  const res = await fetch(`${SB_URL}/rest/v1/printerreservations?id=eq.${id}`, { method: 'DELETE', headers: SB_HEADERS });
   if (!res.ok) throw new Error(`HTTP ${res.status}: ` + await res.text());
 }
-
-function save() {} // reservations go to Supabase
 
 // Webhook UI
 const webhookInput = document.getElementById('webhook-input');
@@ -429,7 +398,7 @@ const webhookStatus = document.getElementById('webhook-status');
 const btnTest = document.getElementById('btn-test');
 webhookInput.value = getWebhook();
 updateWebhookUI();
-webhookInput.addEventListener('input', () => { setWebhook(webhookInput.value.trim()); updateWebhookUI(); });
+webhookInput.addEventListener('input', () => { _webhookUrl = webhookInput.value.trim(); updateWebhookUI(); });
 
 function updateWebhookUI() {
   const url = getWebhook();
@@ -440,8 +409,7 @@ function updateWebhookUI() {
 }
 
 btnTest.addEventListener('click', async () => {
-  btnTest.textContent = 'Sending...';
-  btnTest.disabled = true;
+  btnTest.textContent = 'Sending...'; btnTest.disabled = true;
   const ok = await postToTeams('Print scheduler connected!', [
     { name: 'Status', value: 'Live and ready' },
     { name: 'Info', value: 'Printer reservations will now appear here automatically.' }
@@ -454,9 +422,7 @@ async function postToTeams(title, facts = []) {
   const url = getWebhook();
   if (!url.startsWith('https://')) return false;
   const payload = {
-    type: 'AdaptiveCard',
-    '$schema': 'http://adaptivecards.io/schemas/adaptive-card.json',
-    version: '1.2',
+    type: 'AdaptiveCard', '$schema': 'http://adaptivecards.io/schemas/adaptive-card.json', version: '1.2',
     body: [
       { type: 'TextBlock', text: title, weight: 'Bolder', size: 'Medium', wrap: true },
       ...(facts.length ? [{ type: 'FactSet', facts: facts.map(f => ({ title: f.name, value: f.value })) }] : [])
@@ -468,44 +434,32 @@ async function postToTeams(title, facts = []) {
   } catch(e) { return false; }
 }
 
-// Name text input — restore last used name
 const nameEl = document.getElementById('input-name');
-// name field starts empty each session
 nameEl.addEventListener('input', () => { try { localStorage.setItem('printer_last_name', nameEl.value.trim()); } catch(e) {} validate(); });
 
-// Day buttons
 const DAY_NAMES_SHORT = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
 function buildDayButtons() {
-  const row = document.getElementById('day-row');
-  row.innerHTML = '';
+  const row = document.getElementById('day-row'); row.innerHTML = '';
   for (let i = 0; i < 2; i++) {
     const d = new Date(); d.setHours(0,0,0,0); d.setDate(d.getDate() + i);
     const btn = document.createElement('button');
     btn.className = 'day-btn' + (i === selectedDayOffset ? ' active' : '');
     btn.dataset.offset = i;
-    const label = i === 0 ? 'Today' : i === 1 ? 'Tomorrow' : DAY_NAMES_SHORT[d.getDay()];
+    const label = i === 0 ? 'Today' : 'Tomorrow';
     btn.innerHTML = `<div class="day-label">${label}</div><div class="day-date">${d.getDate()}</div>`;
-    btn.addEventListener('click', () => {
-      selectedDayOffset = i;
-      buildDayButtons();
-      updateEndTimeOptions();
-      validate();
-    });
+    btn.addEventListener('click', () => { selectedDayOffset = i; buildDayButtons(); updateEndTimeOptions(); validate(); });
     row.appendChild(btn);
   }
 }
 buildDayButtons();
 
-// Time options
 function buildTimeOptions(selectEl, startHour = 0) {
-  const current = selectEl.value;
-  selectEl.innerHTML = '';
+  const current = selectEl.value; selectEl.innerHTML = '';
   for (let h = startHour; h < 24; h++) {
     for (let m of [0, 15, 30, 45]) {
       if (h === 0 && m === 0 && startHour === 0) continue;
       const val = `${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}`;
-      const label = formatTimeLabel(h, m);
-      const o = document.createElement('option'); o.value = val; o.textContent = label;
+      const o = document.createElement('option'); o.value = val; o.textContent = formatTimeLabel(h, m);
       selectEl.appendChild(o);
     }
   }
@@ -524,8 +478,7 @@ function buildCustomDurOptions() {
   for (let m = 15; m <= 480; m += 15) {
     const h = Math.floor(m/60), mins = m%60;
     const label = h > 0 ? (mins > 0 ? `${h}h ${mins}min` : `${h}h`) : `${mins}min`;
-    const o = document.createElement('option');
-    o.value = m/60; o.textContent = label;
+    const o = document.createElement('option'); o.value = m/60; o.textContent = label;
     sel.appendChild(o);
   }
 }
@@ -544,8 +497,7 @@ document.getElementById('input-custom-dur').addEventListener('change', function(
   const endSel = document.getElementById('input-end-time');
   buildTimeOptions(endSel, 0);
   if ([...endSel.options].some(o => o.value === endVal)) endSel.value = endVal;
-  updateDurDisplay();
-  validate();
+  updateDurDisplay(); validate();
 });
 
 function updateDurDisplay() {
@@ -557,16 +509,11 @@ function updateDurDisplay() {
     const h = Math.floor(mins/60), m = mins%60;
     durEl.textContent = h > 0 ? (m > 0 ? `(${h}h ${m}min)` : `(${h}h)`) : `(${m}min)`;
     endDisp.textContent = fmtTime(end);
-  } else {
-    durEl.textContent = '';
-    endDisp.textContent = '—';
-  }
+  } else { durEl.textContent = ''; endDisp.textContent = '—'; }
 }
 
 function setDefaultTimes() {
-  const now = new Date();
-  let h = now.getHours() + 1;
-  if (h >= 24) h = 8;
+  const n = new Date(); let h = n.getHours() + 1; if (h >= 24) h = 8;
   const startSel = document.getElementById('input-start-time');
   const endSel = document.getElementById('input-end-time');
   buildTimeOptions(startSel);
@@ -580,18 +527,13 @@ function setDefaultTimes() {
 }
 
 function updateEndTimeOptions() {
-  // If overnight or multi-day, end time can be anything next day
-  // For simplicity, end time is always full 24h range (allows overnight)
-  const endSel = document.getElementById('input-end-time');
-  buildTimeOptions(endSel, 0);
+  buildTimeOptions(document.getElementById('input-end-time'), 0);
 }
-
 setDefaultTimes();
 
 document.getElementById('input-start-time').addEventListener('change', () => {
   const hours = activeDur !== null ? parseFloat(activeDur)
-    : activeCustomDur ? parseFloat(document.getElementById('input-custom-dur').value)
-    : null;
+    : activeCustomDur ? parseFloat(document.getElementById('input-custom-dur').value) : null;
   if (hours) {
     const startTs = getStartTs();
     if (startTs && !isNaN(hours)) {
@@ -607,34 +549,26 @@ document.getElementById('input-start-time').addEventListener('change', () => {
   }
   updateDurDisplay(); validate();
 });
-// end-time is read-only, driven by start + duration
 
 function getStartTs() {
   const d = new Date(); d.setHours(0,0,0,0); d.setDate(d.getDate() + selectedDayOffset);
   const [h, m] = document.getElementById('input-start-time').value.split(':').map(Number);
   if (isNaN(h)) return null;
-  d.setHours(h, m, 0, 0);
-  return d.getTime();
+  d.setHours(h, m, 0, 0); return d.getTime();
 }
 
 function getEndTs() {
   const startTs = getStartTs(); if (!startTs) return null;
   const endVal = document.getElementById('input-end-time').value;
-  const [eh, em] = endVal.split(':').map(Number);
-  if (isNaN(eh)) return null;
-  // Build end date: start on same day, but if end time <= start time, it's next day
-  const startD = new Date(startTs);
-  const endD = new Date(startTs);
-  endD.setHours(eh, em, 0, 0);
-  if (endD.getTime() <= startD.getTime()) endD.setDate(endD.getDate() + 1);
+  const [eh, em] = endVal.split(':').map(Number); if (isNaN(eh)) return null;
+  const endD = new Date(startTs); endD.setHours(eh, em, 0, 0);
+  if (endD.getTime() <= startTs) endD.setDate(endD.getDate() + 1);
   return endD.getTime();
 }
 
 function now() { return Date.now(); }
 
-function fmtTime(ts) {
-  return new Date(ts).toLocaleTimeString('en-CA', { hour: '2-digit', minute: '2-digit' });
-}
+function fmtTime(ts) { return new Date(ts).toLocaleTimeString('en-CA', { hour: '2-digit', minute: '2-digit' }); }
 
 function fmtFull(ts) {
   const d = new Date(ts);
@@ -650,14 +584,11 @@ function fmtDur(ms) {
   return h >= 24 ? Math.round(h/24*10)/10 + ' days' : h + ' h';
 }
 
-// Hours per day shown in Gantt
-const GANTT_START_H = 6;
-const GANTT_END_H = 24;
+const GANTT_START_H = 6, GANTT_END_H = 24;
 const GANTT_HOURS = GANTT_END_H - GANTT_START_H;
-const PX_PER_HOUR = 80; // pixel width per hour column
+const PX_PER_HOUR = 80;
 
 function getDays() {
-  // Always: today + next 2 days, offset by calWeekOffset (each unit = 3 days)
   const base = new Date(); base.setHours(0,0,0,0);
   base.setDate(base.getDate() + calWeekOffset * 3);
   return [0,1,2].map(i => { const d = new Date(base); d.setDate(base.getDate()+i); return d; });
@@ -669,23 +600,15 @@ function renderCalendar() {
   const MONTHS = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
   const DAY_NAMES = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
   const n = now();
-
-  // Title
   const first = days[0], last = days[days.length-1];
   const titleEl = document.getElementById('cal-title');
-  if (calWeekOffset === 0) {
-    titleEl.textContent = 'Next 3 days';
-  } else {
-    titleEl.textContent = `${MONTHS[first.getMonth()]} ${first.getDate()} – ${last.getDate()}`;
-  }
+  titleEl.textContent = calWeekOffset === 0 ? 'Next 3 days' : `${MONTHS[first.getMonth()]} ${first.getDate()} – ${last.getDate()}`;
 
   const inner = document.getElementById('gantt-inner');
   const trackWidth = GANTT_HOURS * PX_PER_HOUR * days.length;
   const labelW = 130;
+  let dayCells = '', hourCells = '';
 
-  // Build day header row + hour header
-  let dayCells = '';
-  let hourCells = '';
   days.forEach(day => {
     const isToday = day.getTime() === today.getTime();
     const dayLabel = isToday ? 'Today' : (DAY_NAMES[day.getDay()] + ' ' + day.getDate() + ' ' + MONTHS[day.getMonth()]);
@@ -693,52 +616,37 @@ function renderCalendar() {
     dayCells += `<div style="width:${dayWidth}px;flex-shrink:0;border-left:${isToday?'1.5px solid var(--border-info)':'0.5px solid var(--border)'};padding:4px 8px;font-size:11px;font-weight:700;color:${isToday?'var(--text-info)':'var(--text-secondary)'};background:${isToday?'var(--bg-info)':'var(--bg-secondary)'};white-space:nowrap;">${dayLabel}</div>`;
     for (let h = GANTT_START_H; h < GANTT_END_H; h++) {
       const label = h < 12 ? h+'am' : h === 12 ? '12pm' : (h-12)+'pm';
-      const isFirstOfDay = h === GANTT_START_H;
-      hourCells += `<div class="gantt-hour" style="width:${PX_PER_HOUR}px;${isFirstOfDay?'border-left:1.5px solid var(--border-info);':''}">
-        ${label}
-      </div>`;
+      hourCells += `<div class="gantt-hour" style="width:${PX_PER_HOUR}px;${h===GANTT_START_H?'border-left:1.5px solid var(--border-info);':''}">${label}</div>`;
     }
   });
 
-  // Build rows
+  const colorBg = ['#e8f4fd','#fef3e2','#edfaf1','#fce8f3'];
   let rowsHtml = '';
-  const colorBg = ['#e8f4fd','#fef3e2','#edfaf1','#fce8f3','#f0ecfd'];
   PRINTERS.forEach((p, pi) => {
-    const color = COLORS[pi];
-    const borderColor = BORDER_COLORS[pi];
-    let barsHtml = '';
-    let nowLineHtml = '';
-
+    const color = COLORS[pi], borderColor = BORDER_COLORS[pi];
+    let barsHtml = '', nowLineHtml = '';
     days.forEach((day, di) => {
-      const dayStart = day.getTime();
-      const dayEnd = dayStart + 86400000;
+      const dayStart = day.getTime(), dayEnd = dayStart + 86400000;
       const ganttStart = dayStart + GANTT_START_H * 3600000;
       const ganttEnd = dayStart + GANTT_END_H * 3600000;
       const dayOffsetPx = di * GANTT_HOURS * PX_PER_HOUR;
-
-      // Now line
       if (n >= ganttStart && n <= ganttEnd) {
         const nowPx = ((n - ganttStart) / 3600000) * PX_PER_HOUR;
         nowLineHtml += `<div class="gantt-now-line" style="left:${dayOffsetPx + nowPx}px;"></div>`;
       }
-
-      // Bars
       const dayRes = reservations.filter(r => r.printer === p.id && r.end > n && r.start < dayEnd && r.end > dayStart);
       dayRes.forEach(r => {
-        const barStart = Math.max(r.start, ganttStart);
-        const barEnd = Math.min(r.end, ganttEnd);
+        const barStart = Math.max(r.start, ganttStart), barEnd = Math.min(r.end, ganttEnd);
         if (barEnd <= barStart) return;
         const leftPx = dayOffsetPx + ((barStart - ganttStart) / 3600000) * PX_PER_HOUR;
         const widthPx = Math.max(((barEnd - barStart) / 3600000) * PX_PER_HOUR, 4);
         barsHtml += `<div class="gantt-bar ${color}" style="left:${leftPx}px;width:${widthPx}px;border-left-color:${borderColor};"
-          data-id="${r.id}"
-          data-tip="${r.name} | ${p.name} | ${fmtTime(r.start)} – ${fmtTime(r.end)}${r.note ? ' | ' + r.note : ''}">
+          data-id="${r.id}" data-tip="${r.name} | ${p.name} | ${fmtTime(r.start)} – ${fmtTime(r.end)}${r.note ? ' | ' + r.note : ''}">
           <span class="gantt-bar-text">${r.name}</span>
           <span class="gantt-bar-sub">${fmtTime(r.start)}–${fmtTime(r.end)}</span>
         </div>`;
       });
     });
-
     rowsHtml += `<div class="gantt-row">
       <div class="gantt-row-label" style="background:${colorBg[pi]};border-left:4px solid ${borderColor};">${p.name}<span>${p.model}</span></div>
       <div class="gantt-row-track" style="width:${trackWidth}px;">
@@ -748,7 +656,6 @@ function renderCalendar() {
     </div>`;
   });
 
-  // Day separator lines in header
   let daySepLines = '';
   days.forEach((day, di) => {
     if (di === 0) return;
@@ -768,30 +675,24 @@ function renderCalendar() {
     <div style="position:relative;">${daySepLines}${rowsHtml}</div>
   `;
 
-  // Tooltip + cancel
   const tooltip = document.getElementById('gantt-tooltip');
   inner.querySelectorAll('.gantt-bar').forEach(bar => {
     bar.addEventListener('mouseenter', e => {
-      const parts = bar.dataset.tip.split(' | ');
-      tooltip.innerHTML = parts.map(s => `<div>${s}</div>`).join('') +
+      tooltip.innerHTML = bar.dataset.tip.split(' | ').map(s => `<div>${s}</div>`).join('') +
         `<div style="margin-top:6px;font-size:10px;opacity:0.7;">Click to cancel</div>`;
       tooltip.classList.add('show');
     });
-    bar.addEventListener('mousemove', e => {
-      tooltip.style.left = (e.clientX + 14) + 'px';
-      tooltip.style.top = (e.clientY - 10) + 'px';
-    });
+    bar.addEventListener('mousemove', e => { tooltip.style.left = (e.clientX+14)+'px'; tooltip.style.top = (e.clientY-10)+'px'; });
     bar.addEventListener('mouseleave', () => tooltip.classList.remove('show'));
     bar.addEventListener('click', async () => {
       tooltip.classList.remove('show');
       const id = bar.dataset.id;
-      const r = reservations.find(x => String(x.id) === String(id));
-      if (!r) return;
+      const r = reservations.find(x => String(x.id) === String(id)); if (!r) return;
       if (!confirm(`Cancel this reservation for ${r.name}?`)) return;
       const p = PRINTERS.find(x => x.id === r.printer);
       reservations = reservations.filter(x => String(x.id) !== String(id));
       renderAll(); showToast('Reservation cancelled');
-      try { await deleteFromSP(id); } catch(e) { console.error('SP delete error:', e); showError('Could not delete from SharePoint: ' + e.message); }
+      try { await deleteFromSP(id); } catch(e) { console.error('SP delete error:', e); }
       await postToTeams('Reservation cancelled', [
         { name: 'Printer', value: p ? `${p.name} (${p.model})` : r.printer },
         { name: 'Was scheduled', value: `${fmtFull(r.start)} to ${fmtFull(r.end)}` },
@@ -799,8 +700,6 @@ function renderCalendar() {
       ]);
     });
   });
-
-  // Legend removed — colors shown in row labels
 }
 
 document.getElementById('cal-prev').addEventListener('click', () => { calWeekOffset--; renderCalendar(); });
@@ -818,20 +717,13 @@ function hasConflict(pid, start, end) {
 }
 
 function renderPrinters() {
-  const grid = document.getElementById('printers-grid');
-  grid.innerHTML = '';
+  const grid = document.getElementById('printers-grid'); grid.innerHTML = '';
   PRINTERS.forEach((p, colorIdx) => {
-    const status = getStatus(p.id);
     const card = document.createElement('div');
     card.className = 'psr-card' + (selectedPrinter === p.id ? ' selected' : '');
     card.style.cssText = `border-left: 4px solid ${BORDER_COLORS[colorIdx]};`;
-    card.innerHTML = `
-      <i class="ti ti-check psr-check"></i>
-      <div class="psr-name">${p.name}</div>
-      <div class="psr-model">${p.model}</div>`;
-    card.addEventListener('click', () => {
-      selectedPrinter = p.id; renderPrinters(); validate();
-    });
+    card.innerHTML = `<i class="ti ti-check psr-check"></i><div class="psr-name">${p.name}</div><div class="psr-model">${p.model}</div>`;
+    card.addEventListener('click', () => { selectedPrinter = p.id; renderPrinters(); validate(); });
     grid.appendChild(card);
   });
   syncSceneToSelection();
@@ -842,7 +734,6 @@ function syncSceneToSelection() {
   const img = document.getElementById('scene-img');
   const label = document.getElementById('scene-label');
   if (!img) return;
-  // Remove any existing printer name bubble
   document.querySelectorAll('.scene-printer-name').forEach(el => el.remove());
   if (!selectedPrinter) {
     img.src = img.dataset.scene;
@@ -852,34 +743,17 @@ function syncSceneToSelection() {
   const hs = document.querySelector(`.scene-hotspot[data-printer="${selectedPrinter}"]`);
   if (hs) img.src = hs.dataset.select;
   if (label) label.style.display = 'none';
-  // Create name bubble above the selected printer hotspot
   const p = PRINTERS.find(x => x.id === selectedPrinter);
   const colorIdx = PRINTERS.indexOf(p);
   const color = BORDER_COLORS[colorIdx];
   if (hs && p) {
-    // Position bubble: horizontally centered over hotspot, just above it
     const hsLeft = parseFloat(hs.style.left);
     const hsWidth = parseFloat(hs.style.width);
     const hsTop = parseFloat(hs.style.top);
     const bubble = document.createElement('div');
     bubble.className = 'scene-printer-name';
     bubble.textContent = p.name;
-    bubble.style.cssText = `
-      position:absolute;
-      left:${hsLeft + hsWidth/2}%;
-      top:calc(${hsTop}% - 2px);
-      transform:translate(-50%, -100%);
-      background:${color};
-      color:#fff;
-      font-size:12px;
-      font-weight:700;
-      padding:3px 12px;
-      border-radius:20px;
-      pointer-events:none;
-      white-space:nowrap;
-      box-shadow:0 2px 6px rgba(0,0,0,0.35);
-      z-index:10;
-    `;
+    bubble.style.cssText = `position:absolute;left:${hsLeft+hsWidth/2}%;top:calc(${hsTop}% - 2px);transform:translate(-50%,-100%);background:${color};color:#fff;font-size:12px;font-weight:700;padding:3px 12px;border-radius:20px;pointer-events:none;white-space:nowrap;box-shadow:0 2px 6px rgba(0,0,0,0.35);z-index:10;`;
     hs.parentElement.appendChild(bubble);
   }
 }
@@ -888,13 +762,12 @@ let _hotspotsInited = false;
 function initHotspots() {
   if (_hotspotsInited) return;
   _hotspotsInited = true;
-  const img = document.getElementById('scene-img');
-  if (!img) return;
+  const img = document.getElementById('scene-img'); if (!img) return;
   document.querySelectorAll('.scene-hotspot').forEach(hs => {
     const pid = hs.dataset.printer;
     hs.addEventListener('mouseenter', () => {
       if (selectedPrinter !== pid) {
-        img.src = hs.dataset.select;
+        img.src = hs.dataset.hover;
         const lbl = document.getElementById('scene-label');
         if (lbl) { lbl.style.display = ''; lbl.textContent = PRINTERS.find(x=>x.id===pid)?.name || pid; }
       }
@@ -908,21 +781,17 @@ function initHotspots() {
       }
       const selHs = document.querySelector(`.scene-hotspot[data-printer="${selectedPrinter}"]`);
       img.src = selHs ? selHs.dataset.select : img.dataset.scene;
-      if (lbl) lbl.style.display = 'none'; // hidden when printer selected (bubble shows instead)
+      if (lbl) lbl.style.display = 'none';
     });
-    hs.addEventListener('click', () => {
-      selectedPrinter = pid; renderPrinters(); validate();
-    });
+    hs.addEventListener('click', () => { selectedPrinter = pid; renderPrinters(); validate(); });
   });
 }
 
 function renderAll() { renderPrinters(); renderCalendar(); }
 
 function validate() {
-  const name = nameEl.value.trim();
-  const pid = selectedPrinter;
-  const start = getStartTs();
-  const end = getEndTs();
+  const name = nameEl.value.trim(), pid = selectedPrinter;
+  const start = getStartTs(), end = getEndTs();
   const ok = name && pid && start && end && end > start;
   const conflict = ok && hasConflict(pid, start, end);
   document.getElementById('conflict-msg').classList.toggle('show', conflict && !!ok);
@@ -930,7 +799,6 @@ function validate() {
 }
 
 nameEl.addEventListener('input', validate);
-
 
 function renderDurBtns() {
   document.querySelectorAll('.dur-btn').forEach(b => b.classList.toggle('active', b.dataset.overnight ? activeDur === 'overnight' : b.dataset.h == activeDur));
@@ -946,14 +814,12 @@ document.getElementById('dur-row').addEventListener('click', e => {
   const btn = e.target.closest('.dur-btn'); if (!btn) return;
   const startSel = document.getElementById('input-start-time');
   const endSel = document.getElementById('input-end-time');
-
   if (btn.dataset.overnight) {
     activeDur = 'overnight'; activeCustomDur = false;
     document.getElementById('input-custom-dur').value = '';
     renderDurBtns();
     buildTimeOptions(startSel); startSel.value = '17:00';
     buildTimeOptions(endSel, 0); endSel.value = '08:00';
-    // Force next day for end by setting selectedDayOffset+1 implicitly via getEndTs logic
     updateDurDisplay(); validate(); return;
   }
   const hours = parseFloat(btn.dataset.h);
@@ -963,48 +829,36 @@ document.getElementById('dur-row').addEventListener('click', e => {
   const startTs = getStartTs(); if (!startTs) return;
   const endTs = startTs + hours * 3600000;
   const endD = new Date(endTs);
-  // Round to nearest 15 min
   const roundedM = Math.round(endD.getMinutes()/15)*15 % 60;
   const roundedH = endD.getHours() + (Math.round(endD.getMinutes()/15)*15 >= 60 ? 1 : 0);
-  const endVal = `${String(roundedH % 24).padStart(2,'0')}:${String(roundedM).padStart(2,'0')}`;
+  const endVal = `${String(roundedH%24).padStart(2,'0')}:${String(roundedM).padStart(2,'0')}`;
   buildTimeOptions(endSel, 0);
   if ([...endSel.options].some(o => o.value === endVal)) endSel.value = endVal;
-  updateDurDisplay();
-  validate();
+  updateDurDisplay(); validate();
 });
 
 document.getElementById('btn-submit').addEventListener('click', async () => {
-  const name = nameEl.value.trim();
-  const pid = selectedPrinter;
-  const start = getStartTs();
-  const end = getEndTs();
+  const name = nameEl.value.trim(), pid = selectedPrinter;
+  const start = getStartTs(), end = getEndTs();
   const note = document.getElementById('input-note').value.trim();
   if (!name||!pid||!start||!end||end<=start||hasConflict(pid,start,end)) return;
   const p = PRINTERS.find(x => x.id===pid);
   const overnight = (end - start) >= 43200000;
   const newRes = { id: Date.now(), name, printer: pid, start, end, note };
   reservations.push(newRes);
-  const calStart = start, calEnd = end, calName = name, calBooth = p ? p.name : pid, calNote = note;
   document.getElementById('input-note').value = '';
   activeDur = null; activeCustomDur = false; renderDurBtns();
   document.getElementById('input-custom-dur').value = '';
   selectedPrinter = null;
-  setDefaultTimes();
-  validate(); renderAll();
-  // Reset scene image back to base scene
+  setDefaultTimes(); validate(); renderAll();
   const sceneImg = document.getElementById('scene-img');
   if (sceneImg) sceneImg.src = sceneImg.dataset.scene;
   const sceneLabel = document.getElementById('scene-label');
   if (sceneLabel) { sceneLabel.style.display = ''; sceneLabel.textContent = 'Hover to preview · click to select'; }
   document.querySelectorAll('.scene-printer-name').forEach(el => el.remove());
   _hotspotsInited = false;
-  try {
-    const spId = await saveToSP(newRes);
-    newRes.id = spId;
-  } catch(e) {
-    console.error('SP save error:', e);
-    showError('Could not save to SharePoint: ' + e.message);
-  }
+  try { const spId = await saveToSP(newRes); newRes.id = spId; }
+  catch(e) { console.error('SP save error:', e); showError('Could not save: ' + e.message); }
   await postToTeams(`${overnight ? 'Long print' : 'Print'} reserved — ${p ? p.name : pid}`, [
     { name: 'Printer', value: p ? `${p.name} (${p.model})` : pid },
     { name: 'Reserved by', value: name },
@@ -1021,65 +875,6 @@ function showToast(msg) {
   setTimeout(() => t.classList.remove('show'), 2200);
 }
 
-function buildICS(name, boothName, startTs, endTs, note) {
-  function fmtDt(ts) {
-    const d = new Date(ts);
-    const pad = n => String(n).padStart(2,'0');
-    return `${d.getFullYear()}${pad(d.getMonth()+1)}${pad(d.getDate())}T${pad(d.getHours())}${pad(d.getMinutes())}00`;
-  }
-  const uid = Date.now() + '@boothresas';
-  const now = fmtDt(Date.now());
-  const desc = `Reserved by: ${name}${note ? '\nNotes: ' + note : ''}`;
-  return [
-    'BEGIN:VCALENDAR',
-    'VERSION:2.0',
-    'PRODID:-//Booth Reservation//FR',
-    'BEGIN:VEVENT',
-    `UID:${uid}`,
-    `DTSTAMP:${now}`,
-    `DTSTART:${fmtDt(startTs)}`,
-    `DTEND:${fmtDt(endTs)}`,
-    `SUMMARY:Bambu Print Scheduler — ${boothName}`,
-    `DESCRIPTION:${desc}`,
-    'END:VEVENT',
-    'END:VCALENDAR'
-  ].join('\r\n');
-}
-
-function downloadICS(name, boothName, startTs, endTs, note) {
-  const ics = buildICS(name, boothName, startTs, endTs, note);
-  const blob = new Blob([ics], { type: 'text/calendar;charset=utf-8' });
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement('a');
-  a.href = url;
-  a.download = 'booth-reservation.ics';
-  document.body.appendChild(a);
-  a.click();
-  document.body.removeChild(a);
-  URL.revokeObjectURL(url);
-}
-
-function showCalConfirm(name, boothName, startTs, endTs, note) {
-  const banner = document.getElementById('cal-confirm');
-  const text = document.getElementById('cal-confirm-text');
-  const link = document.getElementById('btn-add-cal');
-  const startLabel = fmtFull(startTs);
-  const endLabel = fmtTime(endTs);
-  text.textContent = `Reserved! ${boothName} · ${startLabel} – ${endLabel}`;
-  // Remove old listener and add fresh one
-  const newLink = link.cloneNode(true);
-  link.parentNode.replaceChild(newLink, link);
-  newLink.addEventListener('click', e => {
-    e.preventDefault();
-    downloadICS(name, boothName, startTs, endTs, note);
-  });
-  banner.classList.add('show');
-  setTimeout(() => banner.classList.remove('show'), 30000);
-}
-
-
-
-// init called at bottom of script
 // ── Init ──────────────────────────────────────────────────────────────────
 renderAll();
 validate();
