@@ -495,7 +495,7 @@ document.getElementById('input-custom-dur').addEventListener('change', function(
   const roundedH = endD.getHours() + (Math.round(endD.getMinutes()/15)*15 >= 60 ? 1 : 0);
   const endVal = `${String(roundedH%24).padStart(2,'0')}:${String(roundedM).padStart(2,'0')}`;
   const endSel = document.getElementById('input-end-time');
-  buildTimeOptions(endSel, 0);
+  buildTimeOptions(endSel, 7);
   if ([...endSel.options].some(o => o.value === endVal)) endSel.value = endVal;
   updateDurDisplay(); validate();
 });
@@ -516,7 +516,7 @@ function setDefaultTimes() {
   const n = new Date(); let h = n.getHours() + 1; if (h >= 24) h = 8;
   const startSel = document.getElementById('input-start-time');
   const endSel = document.getElementById('input-end-time');
-  buildTimeOptions(startSel);
+  buildTimeOptions(startSel, 7);
   const startVal = `${String(h).padStart(2,'0')}:00`;
   if ([...startSel.options].some(o => o.value === startVal)) startSel.value = startVal;
   updateEndTimeOptions();
@@ -527,7 +527,7 @@ function setDefaultTimes() {
 }
 
 function updateEndTimeOptions() {
-  buildTimeOptions(document.getElementById('input-end-time'), 0);
+  buildTimeOptions(document.getElementById('input-end-time'), 7);
 }
 setDefaultTimes();
 
@@ -543,7 +543,7 @@ document.getElementById('input-start-time').addEventListener('change', () => {
       const roundedH = endD.getHours() + (Math.round(endD.getMinutes()/15)*15 >= 60 ? 1 : 0);
       const endVal = String(roundedH%24).padStart(2,'0') + ':' + String(roundedM).padStart(2,'0');
       const endSel = document.getElementById('input-end-time');
-      buildTimeOptions(endSel, 0);
+      buildTimeOptions(endSel, 7);
       if ([...endSel.options].some(o => o.value === endVal)) endSel.value = endVal;
     }
   }
@@ -820,7 +820,7 @@ document.getElementById('dur-row').addEventListener('click', e => {
     document.getElementById('input-custom-dur').value = '';
     renderDurBtns();
     buildTimeOptions(startSel); startSel.value = '17:00';
-    buildTimeOptions(endSel, 0); endSel.value = '08:00';
+    buildTimeOptions(endSel, 7); endSel.value = '08:00';
     updateDurDisplay(); validate(); return;
   }
   const hours = parseFloat(btn.dataset.h);
@@ -833,7 +833,7 @@ document.getElementById('dur-row').addEventListener('click', e => {
   const roundedM = Math.round(endD.getMinutes()/15)*15 % 60;
   const roundedH = endD.getHours() + (Math.round(endD.getMinutes()/15)*15 >= 60 ? 1 : 0);
   const endVal = `${String(roundedH%24).padStart(2,'0')}:${String(roundedM).padStart(2,'0')}`;
-  buildTimeOptions(endSel, 0);
+  buildTimeOptions(endSel, 7);
   if ([...endSel.options].some(o => o.value === endVal)) endSel.value = endVal;
   updateDurDisplay(); validate();
 });
